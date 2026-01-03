@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/chat_bubble.dart';
+import '../widgets/chat_input_bar.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -10,6 +12,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
+  final ScrollController _scrollController = ScrollController();
+  bool _isBotTyping = false;
 
   void _sendMessage() {
     final userText = _controller.text.trim();
@@ -17,6 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       _messages.add({"role": "user", "text": userText});
+      _isBotTyping = true;
     });
 
     _controller.clear();
@@ -26,7 +31,23 @@ class _ChatScreenState extends State<ChatScreen> {
     Future.delayed(const Duration(milliseconds: 600), () {
       setState(() {
         _messages.add({"role": "bot", "text": botReply});
+        _isBotTyping = false;
       });
+      _scrollToBottom();
+    });
+
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
@@ -51,60 +72,70 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Care Assistant"),
+        title: Row(children: [
+          const CircleAvatar(child: Icon(Icons.health_and_safety, size: 20)),
+          const SizedBox(width: 12),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text("Care Assistant", style: TextStyle(fontSize: 18)),
+            Text("Here to help", style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color)),
+          ]),
+        ]),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isUser = msg["role"] == "user";
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                reverse: true,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: _messages.length + (_isBotTyping ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (_isBotTyping && index == 0) {
+                    return const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: SizedBox(
+                          width: 80,
+                          child: LinearProgressIndicator(minHeight: 8),
+                        ),
+                      ),
+                    );
+                  }
 
-                return Align(
-                  alignment:
-                      isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isUser ? Colors.blue[200] : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      msg["text"]!,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
+                  final actualIndex = _isBotTyping ? index - 1 : index;
+                  final msgIndex = _messages.length - 1 - actualIndex;
+                  final msg = _messages[msgIndex];
+                  final isUser = msg["role"] == "user";
+
+                  return ChatBubble(text: msg["text"]!, isUser: isUser);
+                },
+              ),
+            ),
+            ChatInputBar(
+              controller: _controller,
+              onSend: _sendMessage,
+              onMic: () {
+                // preserve feature set: not implementing voice recognition now
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Voice input not implemented yet')),
                 );
               },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: "Type or speak your message...",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

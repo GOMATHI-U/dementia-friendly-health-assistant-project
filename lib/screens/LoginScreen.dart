@@ -31,171 +31,197 @@ class _LoginScreenState extends State<LoginScreen> {
     final userController = context.read<UserController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F4FB),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF8E6BBF), Color(0xFF6C5CE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
 
-                // 🧠 App Title
-                const Text(
-                  "Welcome Back",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                  // Logo Circle
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.health_and_safety,
+                        size: 40,
+                        color: Color(0xFF6C5CE7),
+                      ),
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 8),
+                  const SizedBox(height: 16),
 
-                const Text(
-                  "Please sign in to continue",
-                  style: TextStyle(fontSize: 18, color: Colors.black54),
-                ),
-
-                const SizedBox(height: 32),
-
-                // 🧾 Login Card
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
+                  // App Title
+                  const Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      // 👥 Role Selector
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _roleButton(
-                              title: "Patient",
-                              icon: Icons.person,
-                              selected: _selectedRole == UserRole.patient,
-                              onTap: () {
-                                setState(() {
-                                  _selectedRole = UserRole.patient;
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _roleButton(
-                              title: "Caregiver",
-                              icon: Icons.medical_services,
-                              selected: _selectedRole == UserRole.caregiver,
-                              onTap: () {
-                                setState(() {
-                                  _selectedRole = UserRole.caregiver;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
 
-                      const SizedBox(height: 24),
+                  const SizedBox(height: 8),
 
-                      // 📧 Email
-                      _buildField(
-                        controller: _emailController,
-                        label: "Email",
-                        icon: Icons.email,
-                      ),
+                  const Text(
+                    "Please sign in to continue",
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                  ),
 
-                      const SizedBox(height: 16),
+                  const SizedBox(height: 32),
 
-                      // 🔒 Password
-                      _buildField(
-                        controller: _passwordController,
-                        label: "Password",
-                        icon: Icons.lock,
-                        obscure: true,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // 🔘 Login Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onPressed: _loading
-                              ? null
-                              : () async {
-                                  setState(() => _loading = true);
-
-                                  debugPrint(
-                                      "Logging in as $_selectedRole");
-
-                                  final error =
-                                      await userController.loginUser(
-                                    _emailController.text.trim(),
-                                    _passwordController.text.trim(),
-                                  );
-
-                                  if (!mounted) return;
-
-                                  setState(() => _loading = false);
-
-                                  if (error != null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(error),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                  // ✅ AuthWrapper will handle navigation
-                                },
-                          child: _loading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : const Text(
-                                  "Sign In",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                  // Login Card
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // 👥 Role Selector
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _roleButton(
+                                title: "Patient",
+                                icon: Icons.person,
+                                selected: _selectedRole == UserRole.patient,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedRole = UserRole.patient;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _roleButton(
+                                title: "Caregiver",
+                                icon: Icons.medical_services,
+                                selected: _selectedRole == UserRole.caregiver,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedRole = UserRole.caregiver;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // 📧 Email
+                        _buildField(
+                          controller: _emailController,
+                          label: "Email",
+                          icon: Icons.email,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // 🔒 Password
+                        _buildField(
+                          controller: _passwordController,
+                          label: "Password",
+                          icon: Icons.lock,
+                          obscure: true,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // 🔘 Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: _loading
+                                ? null
+                                : () async {
+                                    setState(() => _loading = true);
+
+                                    debugPrint("Logging in as $_selectedRole");
+
+                                    final error = await userController.loginUser(
+                                      _emailController.text.trim(),
+                                      _passwordController.text.trim(),
+                                    );
+
+                                    if (!mounted) return;
+
+                                    setState(() => _loading = false);
+
+                                    if (error != null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(error),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                    // ✅ AuthWrapper will handle navigation
+                                  },
+                            child: _loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    "Sign In",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // ℹ️ Helper Text
-                const Text(
-                  "If you need help signing in,\nplease contact your caregiver.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
-                ),
+                  // ℹ️ Helper Text
+                  const Text(
+                    "If you need help signing in,\nplease contact your caregiver.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
 
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),

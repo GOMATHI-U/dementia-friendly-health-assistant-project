@@ -61,13 +61,28 @@ class _HomeScreenDementiaState extends State<HomeScreenDementia> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          children: [
+            const CircleAvatar(backgroundColor: Colors.white, child: Icon(Icons.health_and_safety, color: Color(0xFF6C5CE7))),
+            const SizedBox(width: 12),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text("Good day", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+              Text("Care Assistant — $_currentTime", style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.95))),
+            ])
+          ],
+        ),
+        actions: [
+          IconButton(onPressed: () => Navigator.pushNamed(context, '/settings'), icon: const Icon(Icons.settings, color: Colors.white)),
+        ],
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
+        padding: const EdgeInsets.only(top: 80),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF8E44AD), Color(0xFF5E60CE)],
+            colors: [Color(0xFF7C4DFF), Color(0xFF6C5CE7)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -119,17 +134,30 @@ class _HomeScreenDementiaState extends State<HomeScreenDementia> {
   }
 
   Widget _buildTimeDisplay() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        _currentTime,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0,4))],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text("Current time", style: TextStyle(fontSize: 12, color: Colors.black54)),
+              const SizedBox(height: 6),
+              Text(_currentTime, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            ]),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pushNamed(context, '/reminders'),
+              icon: const Icon(Icons.alarm),
+              label: const Text("Reminders"),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+            ),
+          ],
         ),
       ),
     );
@@ -140,40 +168,51 @@ class _HomeScreenDementiaState extends State<HomeScreenDementia> {
     required String label,
     required Widget screen,
   }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => screen),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(2, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: Colors.deepPurple),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => screen),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 12,
+                offset: Offset(0, 6),
               ),
-            ),
-          ],
+            ],
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(colors: [Color(0xFFEDE7FF), Color(0xFFD7C8FF)]),
+                ),
+                child: Icon(icon, size: 36, color: const Color(0xFF6C5CE7)),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A2FA3),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

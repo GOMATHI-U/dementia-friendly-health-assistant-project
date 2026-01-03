@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _darkMode = false;
+  bool _notifications = true;
 
   @override
   Widget build(BuildContext context) {
@@ -22,28 +30,36 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _settingsTile(
-            icon: Icons.dark_mode,
-            title: "Dark Mode",
-            subtitle: "Enable or disable dark mode",
-            onTap: () {
-              // TODO: Implement dark mode functionality
-            },
+          Card(
+            color: const Color(0xFFDED0F2),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: SwitchListTile(
+              value: _darkMode,
+              onChanged: (v) => setState(() => _darkMode = v),
+              title: const Text('Dark Mode', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              subtitle: const Text('Enable or disable dark mode'),
+              secondary: const Icon(Icons.dark_mode, color: Color(0xFF8E6BBF)),
+            ),
           ),
-          _settingsTile(
-            icon: Icons.notifications,
-            title: "Notifications",
-            subtitle: "Manage notification preferences",
-            onTap: () {
-              // TODO: Implement notification settings
-            },
+          const SizedBox(height: 8),
+          Card(
+            color: const Color(0xFFDED0F2),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: SwitchListTile(
+              value: _notifications,
+              onChanged: (v) => setState(() => _notifications = v),
+              title: const Text('Notifications', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              subtitle: const Text('Manage notification preferences'),
+              secondary: const Icon(Icons.notifications, color: Color(0xFF8E6BBF)),
+            ),
           ),
+          const SizedBox(height: 8),
           _settingsTile(
             icon: Icons.language,
             title: "Language",
             subtitle: "Select app language",
             onTap: () {
-              // TODO: Implement language selection
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Language selection coming soon')));
             },
           ),
           _settingsTile(
@@ -51,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
             title: "Privacy",
             subtitle: "Adjust privacy settings",
             onTap: () {
-              // TODO: Implement privacy settings
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Privacy settings coming soon')));
             },
           ),
           _settingsTile(
@@ -59,7 +75,7 @@ class SettingsScreen extends StatelessWidget {
             title: "About",
             subtitle: "App version and details",
             onTap: () {
-              // TODO: Show app details
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('App details coming soon')));
             },
           ),
         ],
